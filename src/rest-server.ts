@@ -1,4 +1,13 @@
-import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+// Importing some console colors
+import {
+  bold,
+  cyan,
+  green,
+  yellow,
+} from "https://deno.land/std@0.152.0/fmt/colors.ts";
+
+import { Application, Router, Status, Context } from "https://deno.land/x/oak/mod.ts";
+
 import {router} from './router.ts'
 
 const port = 5000
@@ -19,6 +28,21 @@ app.use(router.allowedMethods());
 // A basic 404 page
 app.use(notFound);
 
+
+// Logger
+app.use(async (context, next) => {
+  await next();
+  const rt = context.response.headers.get("X-Response-Time");
+  console.log(
+    `${green(context.request.method)} ${cyan(context.request.url.pathname)} - ${
+      bold(
+        String(rt),
+      )
+    }`,
+  );
+});
+
+
 // Response Time
 app.use(async (context, next) => {
   const start = Date.now();
@@ -28,10 +52,18 @@ app.use(async (context, next) => {
 });
 
 
+app.addEventListener("listen", ({ hostname, port, serverType }) => {
+  console.log(
+    bold("Start listening on ") + yellow(`${hostname}:${port}`),
+  );
+  console.log(bold("  using HTTP server: " + yellow(serverType)));
+});
+
+
 console.log(`App has been started on port ${port}...`)
 
 const { signal } = controller;
 
 await app.listen({ port , signal})
 
-console.log("Finished.");
+console.log(bold("Finished."));
