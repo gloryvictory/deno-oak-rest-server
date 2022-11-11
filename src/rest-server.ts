@@ -1,3 +1,6 @@
+import { config } from "https://deno.land/std@0.163.0/dotenv/mod.ts";
+
+
 // Importing some console colors
 import {
   bold,
@@ -6,24 +9,25 @@ import {
   yellow,
 } from "https://deno.land/std@0.152.0/fmt/colors.ts";
 
-import { Application, Router, Status, Context } from "https://deno.land/x/oak/mod.ts";
+import { Application  } from "https://deno.land/x/oak/mod.ts";
+// import { Application, Router, Status, Context } from "https://deno.land/x/oak/mod.ts";
 
-import {router} from './router.ts'
+import { router_user } from './router.ts'
+import { notFound    } from "./api/v1/notfound/notfound_controller.ts";
 
-const port = 5000
 
-function notFound(context: Context) {
-  context.response.status = Status.NotFound;
-  context.response.body =
-    `<html><body><h1>404 - Not Found</h1><p>Path <code>${context.request.url}</code> not found.`;
-}
+const { AA_PORT } = config()
+
+const port = parseInt(AA_PORT) | 5000
+
+
 
 const app = new Application()
 const controller = new AbortController();
 
 
-app.use(router.routes())
-app.use(router.allowedMethods());
+app.use(router_user.routes())
+app.use(router_user.allowedMethods());
 
 // A basic 404 page
 app.use(notFound);
