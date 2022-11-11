@@ -15,7 +15,8 @@ export const getUsers = ({ response }: {response: any}) => {
   
   response.status = Status.OK // response.status = 200
   response.body = {
-    users
+    success: true,
+    data: users
   }
 }
 
@@ -24,10 +25,16 @@ export const getUser = ({ response, params }: {response: any, params: {id: strin
 
   if (user) {
     response.status = 200
-    response.body = {user}
+    response.body = {
+      success: true, 
+      data: user
+      }
   } else {
     response.status = 404
-    response.body = {message: 'User Not Found'}
+    response.body = {
+      success: false,
+      message: "404 - Not found. User not found",
+    };
   }
 }
 
@@ -36,7 +43,11 @@ export const createUser = async ({ response, request }: {response: any, request:
 
   if (!request.hasBody) {
     response.status = 400
-    response.body = {message: 'Invalid data'}
+    response.body = 
+    {
+      success: false,
+      message: "400 - Invalid data",
+    }
   } else {
     const user: User = body.value
     user.id = v4.generate()
@@ -55,11 +66,17 @@ export const updateUser = async ({ params, response, request }: {response: any, 
     users = users.map(u => u.id === user.id ? {...u, ...body.value} : u)
 
     response.status = 200
-    response.body = {users}
+    response.body = {
+      success: true, 
+      data: users
+    }
 
   } else {
     response.status = 404
-    response.body = {message: 'User not found'}
+    response.body = {
+      success: false,
+      message: "404 - Not found. User not found",
+    };
   }
 }
 
@@ -67,6 +84,9 @@ export const removeUser = ({params, response}: {params: {id: string}, response: 
   users = users.filter(u => u.id !== params.id)
 
   response.status = 200
-  response.body = {users}
+    response.body = {
+      success: true, 
+      data: users
+    }
 
 }
